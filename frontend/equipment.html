@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Equipment | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">SmartRent</a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <h2>Available Equipment</h2>
+    
+    <div class="mb-3 flex justify-between items-center" style="gap: 1rem; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 250px;">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by name...">
+      </div>
+      <div>
+        <select id="categoryFilter" class="form-control">
+          <option value="">All Categories</option>
+          <option value="Construction">Construction</option>
+          <option value="Agriculture">Agriculture</option>
+          <option value="Industrial">Industrial</option>
+          <option value="Event">Event</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="loadingIndicator" class="hidden text-center my-4">
+      <div class="spinner"></div>
+    </div>
+    
+    <div id="errorMsg" class="mb-2 text-center" style="color: #ef4444;"></div>
+
+    <div class="grid grid-cols-4" id="equipmentList">
+      <!-- Equipment cards injected here -->
+    </div>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/equipment.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">SmartRent</a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <div class="flex justify-between items-center mb-3">
+      <h2>Owner Dashboard</h2>
+      <button class="btn btn-primary" onclick="document.getElementById('addEquipmentModal').classList.add('active')">Add New Equipment</button>
+    </div>
+
+    <div class="grid grid-cols-2" style="gap: 3rem;">
+      <div>
+        <h3>My Equipment</h3>
+        <div id="equipmentList" class="mt-2" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+      </div>
+      <div>
+        <h3>Booking Requests</h3>
+        <div id="bookingsList" class="mt-2" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Equipment Modal -->
+  <div id="addEquipmentModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <h2 class="mb-3">Add Equipment</h2>
+      <form id="addEqForm">
+        <div class="grid grid-cols-2">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" id="eqName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="eqCategory" class="form-control" required>
+              <option value="Construction">Construction</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Event">Event</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group col-span-full" style="grid-column: 1 / -1;">
+            <label class="form-label">Description</label>
+            <textarea id="eqDesc" class="form-control" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price per Day (₹)</label>
+            <input type="number" id="eqPrice" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" id="eqLocation" class="form-control" required>
+          </div>
+        </div>
+        <div class="flex justify-between mt-3">
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('addEquipmentModal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Equipment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isLoggedIn() || getUser().role !== 'Equipment Owner') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const user = getUser();
+      
+      // Load Data
+      loadOwnerEquipment();
+      loadOwnerBookings();
+
+      async function loadOwnerEquipment() {
+        const el = document.getElementById('equipmentList');
+        try {
+          const result = await apiCall(`/equipment?ownerId=${user.id}`);
+          if (result.data.length === 0) {
+            el.innerHTML = '<p>You have not listed any equipment.</p>';
+            return;
+          }
+          el.innerHTML = result.data.map(eq => `
+            <div class="card" style="padding: 1rem;">
+              <div class="flex justify-between items-center">
+                <div>
+                  <h4 style="margin:0;">${eq.name}</h4>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">${eq.category} | ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(eq.pricePerDay)}/day</span>
+                </div>
+                <span class="badge ${eq.availability ? 'score-badge' : ''}" style="margin:0;">${eq.availability ? 'Available' : 'Unavailable'}</span>
+              </div>
+            </div>
+          `).join('');
+        } catch (err) {
+          el.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        }
+      }
+
+      async function loadOwnerBookings() {
+        const el = document.getElementById('bookingsList');
+        try {
+          const result = await apiCall('/bookings');
+          if (result.data.length === 0) {
+            el.innerHTML = '<p>No booking requests yet.</p>';
+            return;
+          }
+          el.innerHTML = result.data.map(bk => `
+            <div class="card" style="padding: 1rem;">
+              <h4 style="margin-bottom:0.5rem;">${bk.equipmentId.name}</h4>
+              <p style="font-size:0.875rem; margin-bottom:0.25rem;"><strong>Renter:</strong> ${bk.renterId.name} (${bk.renterId.email})</p>
+              <p style="font-size:0.875rem; margin-bottom:0.25rem;"><strong>Dates:</strong> ${new Date(bk.startDate).toLocaleDateString()} - ${new Date(bk.endDate).toLocaleDateString()}</p>
+              <p style="font-size:0.875rem; margin-bottom:0.5rem;"><strong>Status:</strong> ${bk.bookingStatus}</p>
+              
+              ${bk.bookingStatus === 'Pending' ? `
+                <div class="flex gap-2">
+                  <button class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="updateBooking('${bk._id}', 'Accepted')">Accept</button>
+                  <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; color: #ef4444; border-color: #ef4444;" onclick="updateBooking('${bk._id}', 'Rejected')">Reject</button>
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+        } catch (err) {
+          el.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        }
+      }
+
+      window.updateBooking = async (id, status) => {
+        try {
+          await apiCall(`/bookings/${id}/status`, 'PUT', { bookingStatus: status });
+          loadOwnerBookings(); // reload
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+
+      document.getElementById('addEqForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          await apiCall('/equipment', 'POST', {
+            name: document.getElementById('eqName').value,
+            category: document.getElementById('eqCategory').value,
+            description: document.getElementById('eqDesc').value,
+            pricePerDay: document.getElementById('eqPrice').value,
+            location: document.getElementById('eqLocation').value,
+          });
+          document.getElementById('addEquipmentModal').classList.remove('active');
+          loadOwnerEquipment();
+        } catch (err) {
+          alert('Failed to add: ' + err.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

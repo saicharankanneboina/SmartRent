@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">SmartRent</a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <h2>Admin Dashboard</h2>
+    
+    <div id="loadingIndicator" class="spinner mt-4"></div>
+    <div id="errorMsg" style="color: #ef4444;" class="text-center mt-2"></div>
+
+    <div id="adminContent" class="hidden mt-4">
+      <div class="grid grid-cols-4 mb-4">
+        <div class="card text-center" style="padding: 1.5rem;">
+          <h3 style="font-size: 2.5rem; color: var(--primary-color);" id="statUsers">0</h3>
+          <p style="margin: 0; font-weight: 500;">Total Users</p>
+        </div>
+        <div class="card text-center" style="padding: 1.5rem;">
+          <h3 style="font-size: 2.5rem; color: var(--secondary-color);" id="statEquipment">0</h3>
+          <p style="margin: 0; font-weight: 500;">Equipment Listings</p>
+        </div>
+        <div class="card text-center" style="padding: 1.5rem;">
+          <h3 style="font-size: 2.5rem; color: #10b981;" id="statActiveBookings">0</h3>
+          <p style="margin: 0; font-weight: 500;">Active Bookings</p>
+        </div>
+        <div class="card text-center" style="padding: 1.5rem;">
+          <h3 style="font-size: 2.5rem; color: #f59e0b;" id="statRevenue">₹0</h3>
+          <p style="margin: 0; font-weight: 500;">Total Platform Revenue</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2" style="gap: 2rem;">
+        <div class="card" style="padding: 1.5rem;">
+          <h3>User Breakdown</h3>
+          <ul style="list-style: none; padding: 0; margin-top: 1rem;">
+            <li class="flex justify-between mb-2"><span>Renters:</span> <strong id="statRenters">0</strong></li>
+            <li class="flex justify-between"><span>Owners:</span> <strong id="statOwners">0</strong></li>
+          </ul>
+        </div>
+        <div class="card" style="padding: 1.5rem;">
+          <h3>Equipment Categories</h3>
+          <ul id="categoriesList" style="list-style: none; padding: 0; margin-top: 1rem;">
+            <!-- Categories injected here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isLoggedIn() || getUser().role !== 'Admin') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const loading = document.getElementById('loadingIndicator');
+      const errorMsg = document.getElementById('errorMsg');
+      const content = document.getElementById('adminContent');
+
+      try {
+        const result = await apiCall('/admin/dashboard');
+        const stats = result.data;
+        
+        document.getElementById('statUsers').textContent = stats.totalUsers;
+        document.getElementById('statEquipment').textContent = stats.totalEquipment;
+        document.getElementById('statActiveBookings').textContent = stats.activeBookings;
+        document.getElementById('statRevenue').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(stats.totalRevenue);
+        
+        document.getElementById('statRenters').textContent = stats.totalRenters;
+        document.getElementById('statOwners').textContent = stats.totalOwners;
+
+        const catList = document.getElementById('categoriesList');
+        stats.categories.forEach(cat => {
+          catList.innerHTML += `<li class="flex justify-between mb-2"><span>${cat._id}:</span> <strong>${cat.count}</strong></li>`;
+        });
+
+        loading.classList.add('hidden');
+        content.classList.remove('hidden');
+      } catch (err) {
+        loading.classList.add('hidden');
+        errorMsg.textContent = 'Failed to load dashboard data: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

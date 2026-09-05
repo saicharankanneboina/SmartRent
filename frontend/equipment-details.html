@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipment Details | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">SmartRent</a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <div id="loadingIndicator" class="text-center my-4">
+      <div class="spinner"></div>
+    </div>
+    
+    <div id="errorMsg" class="mb-2 text-center" style="color: #ef4444;"></div>
+
+    <div id="equipmentDetails" class="hidden">
+      <div class="grid grid-cols-2">
+        <div>
+          <img id="eqImage" src="" alt="Equipment" style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+        </div>
+        <div>
+          <span id="eqCategory" class="badge"></span>
+          <h1 id="eqName" class="mb-2"></h1>
+          <p class="mb-2 text-primary" style="font-size: 1.5rem; font-weight: 700;"><span id="eqPrice"></span> <span style="font-size: 1rem; color: var(--text-secondary); font-weight: normal;">/ day</span></p>
+          <p class="mb-1"><strong>Location:</strong> <span id="eqLocation"></span></p>
+          <p class="mb-3"><strong>Rating:</strong> ⭐ <span id="eqRating"></span></p>
+          
+          <h3 class="mb-1">Description</h3>
+          <p id="eqDesc" class="mb-4"></p>
+
+          <div class="card" style="background: rgba(99, 102, 241, 0.05);">
+            <div class="card-body">
+              <h3 class="mb-2">Book This Equipment</h3>
+              <form id="bookingForm">
+                <div class="form-group">
+                  <label class="form-label">Start Date</label>
+                  <input type="date" id="startDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">End Date</label>
+                  <input type="date" id="endDate" class="form-control" required>
+                </div>
+                
+                <div class="mb-3" style="font-size: 0.875rem; background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  <div class="flex justify-between mb-1">
+                    <span>Rental Cost:</span>
+                    <span id="costDisplay">₹0</span>
+                  </div>
+                  <div class="flex justify-between mb-1">
+                    <span>Security Deposit (20%):</span>
+                    <span id="depositDisplay">₹0</span>
+                  </div>
+                  <hr style="margin: 0.5rem 0; border: none; border-top: 1px solid var(--border-color);">
+                  <div class="flex justify-between font-bold" style="font-size: 1rem;">
+                    <span>Total Amount:</span>
+                    <span id="totalDisplay">₹0</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Payment Method</label>
+                  <select id="paymentMethod" class="form-control">
+                    <option value="Online Payment">Online Payment (Simulated)</option>
+                    <option value="Cash">Cash on Pickup</option>
+                  </select>
+                </div>
+
+                <button type="submit" id="bookBtn" class="btn btn-primary" style="width: 100%;">Proceed to Booking</button>
+                <p id="bookingError" class="mt-2 text-center" style="color: #ef4444; font-size: 0.875rem;"></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Simulated Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content text-center">
+      <h2 class="mb-2">Processing Payment</h2>
+      <p class="mb-4">Please do not close this window...</p>
+      <div id="paymentSpinner" class="spinner mb-4"></div>
+      <div id="paymentSuccess" class="hidden">
+        <svg style="width: 48px; height: 48px; color: #10b981; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h3 class="mb-2" style="color: #10b981;">Payment Successful!</h3>
+        <p class="mb-4">Your booking has been requested.</p>
+        <button id="closePaymentBtn" class="btn btn-primary">Go to Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/equipment-details.js"></script>
+</body>
+</html>

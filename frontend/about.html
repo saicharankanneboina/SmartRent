@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About SmartRent | Your Trusted Equipment Rental Platform</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <!-- Minimal Gear/Excavator SVG Logo -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <div>
+          SmartRent
+          <span class="nav-brand-sub">Rent Smart • Build Better</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="nav-links" id="navLinksAuth">
+        <!-- Auth state injected by JS, fallback to static here -->
+        <a href="login.html" class="btn btn-outline" style="padding: 0.5rem 1.2rem; color: white; border-color: white;">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          Login
+        </a>
+        <a href="register.html" class="btn btn-accent" style="padding: 0.5rem 1.2rem;">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- About Hero -->
+  <section class="container" style="text-align: center; padding: 4rem 1rem 2rem;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">About <span style="color: var(--accent-color);">SmartRent</span></h1>
+    <p class="lead" style="max-width: 650px; margin: 0 auto; font-size: 1.15rem; color: var(--text-secondary);">SmartRent connects equipment owners directly with renters through an intelligent, seamless platform, helping you find and rent the exact tools you need instantly.</p>
+  </section>
+
+  <!-- What Makes SmartRent Smarter? Grid -->
+  <section class="container" style="padding: 2rem 1.5rem 5rem;">
+    <h2 style="text-align: center; margin-bottom: 3rem;">What Makes SmartRent Smarter?</h2>
+    <div class="grid grid-cols-4" style="gap: 1.5rem;">
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <svg style="width: 40px; height: 40px; color: var(--secondary-color); margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Smart Matching</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">AI-assisted recommendations instantly match you with the precise equipment required for your project.</p>
+      </div>
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <svg style="width: 40px; height: 40px; color: var(--secondary-color); margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Safe & Secure</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">All owners and equipment are verified to provide a secure and highly reliable rental experience.</p>
+      </div>
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <svg style="width: 40px; height: 40px; color: var(--secondary-color); margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Wide Variety</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Access thousands of different types of equipment for all of your varying construction requirements.</p>
+      </div>
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <svg style="width: 40px; height: 40px; color: var(--secondary-color); margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Location-Based</h3>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Discover and rent equipment effortlessly based on your specific job site location and availability.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="background: var(--primary-color); color: white; padding: 4rem 1rem; text-align: center;">
+    <div class="container">
+      <h2 style="color: white; margin-bottom: 1rem;">Ready to get started?</h2>
+      <a href="register.html" class="btn btn-accent" style="padding: 1rem 2.5rem; font-size: 1.1rem; margin-top: 1rem;">Create an Account</a>
+    </div>
+  </section>
+
+
+  <script src="js/api.js"></script>
+</body>
+</html>

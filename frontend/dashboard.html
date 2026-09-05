@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renter Dashboard | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        SmartRent
+      </a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <h2>Renter Dashboard</h2>
+    <p>Welcome back, <strong id="userName" style="color: var(--primary-color);"></strong>!</p>
+
+    <!-- AI Equipment Search Flow -->
+    <div class="mt-4 mb-4" style="background: white; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm);">
+      <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Tell us what you need</h2>
+      <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">Describe your requirement in your own words.</p>
+      
+      <div style="position: relative;">
+        <textarea id="aiPrompt" class="form-control" rows="4" placeholder="Describe the equipment you need..." style="font-size: 1.1rem; padding: 1.5rem; border-radius: var(--radius-md); resize: vertical; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></textarea>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+          <div>
+            <button id="useLocationBtn" class="btn btn-outline">
+              <svg style="width: 18px; height: 18px; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+              Use My Location
+            </button>
+            <span id="locationStatus" class="hidden" style="font-size: 0.875rem; color: #10b981; margin-left: 0.5rem;">📍 Location acquired</span>
+          </div>
+          <button id="searchBtn" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">
+            Find Equipment
+          </button>
+        </div>
+      </div>
+
+      <div id="loadingIndicator" class="hidden text-center mt-4">
+        <div class="spinner"></div>
+        <p class="mt-2 text-secondary" style="font-size: 1rem;">Finding the best equipment for you...</p>
+      </div>
+      <div id="errorMsg" class="mt-2" style="color: #ef4444; font-size: 1rem; text-align: center;"></div>
+    </div>
+
+    <!-- AI Results Section (Hidden by default) -->
+    <div id="resultsSection" class="hidden mb-4">
+      <h3 style="display: flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <svg style="width: 20px; height: 20px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Recommended Equipment
+      </h3>
+      <div id="aiAnalysisResult" class="mb-3 p-3" style="background: rgba(99, 102, 241, 0.05); border-radius: var(--radius-md); border-left: 4px solid var(--secondary-color); font-size: 0.875rem;">
+        <!-- AI Analysis inserted here -->
+      </div>
+      <div class="grid grid-cols-3" id="equipmentGrid">
+        <!-- Cards injected here -->
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <h3 style="border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">My Bookings</h3>
+      <div id="bookingsLoadingIndicator" class="spinner mt-2"></div>
+      <div id="bookingsErrorMsg" style="color: #ef4444;" class="mt-2 text-sm"></div>
+      
+      <div class="grid grid-cols-2 mt-3" id="bookingsList">
+        <!-- Bookings injected here -->
+      </div>
+    </div>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/recommendation.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!isLoggedIn()) return; // api.js handles redirect
+      
+      const user = getUser();
+      document.getElementById('userName').textContent = user.name;
+
+      const bookingsList = document.getElementById('bookingsList');
+      const bLoading = document.getElementById('bookingsLoadingIndicator');
+      const bErrorMsg = document.getElementById('bookingsErrorMsg');
+
+      try {
+        const result = await apiCall('/bookings');
+        bLoading.classList.add('hidden');
+        
+        if (result.data.length === 0) {
+          bookingsList.innerHTML = '<p class="col-span-full text-secondary" style="font-size: 0.875rem;">You have no active bookings yet.</p>';
+          return;
+        }
+
+        result.data.forEach(booking => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const eq = booking.equipmentId;
+          const statusColor = booking.bookingStatus === 'Pending' ? '#f59e0b' : 
+                              booking.bookingStatus === 'Accepted' ? '#10b981' : 
+                              booking.bookingStatus === 'Rejected' ? '#ef4444' : 'var(--secondary-color)';
+          
+          card.innerHTML = `
+            <div class="card-body">
+              <div class="flex justify-between items-center mb-2">
+                <h4 style="margin: 0;">${eq.name}</h4>
+                <span class="badge" style="background: ${statusColor}15; color: ${statusColor}; margin: 0;">${booking.bookingStatus}</span>
+              </div>
+              <p class="mb-1" style="font-size: 0.875rem;"><strong>Dates:</strong> ${new Date(booking.startDate).toLocaleDateString()} - ${new Date(booking.endDate).toLocaleDateString()}</p>
+              <p class="mb-1" style="font-size: 0.875rem;"><strong>Total Amount:</strong> ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(booking.totalAmount)}</p>
+              <p class="mb-3" style="font-size: 0.875rem;"><strong>Payment:</strong> ${booking.paymentMethod} (${booking.paymentStatus})</p>
+              
+              <a href="equipment-details.html?id=${eq._id}" class="btn btn-outline" style="font-size: 0.75rem; padding: 0.4rem 0.8rem;">View Equipment</a>
+            </div>
+          `;
+          bookingsList.appendChild(card);
+        });
+
+      } catch (err) {
+        bLoading.classList.add('hidden');
+        bErrorMsg.textContent = 'Failed to load bookings: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
