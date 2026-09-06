@@ -11,7 +11,12 @@ exports.getEquipments = async (req, res) => {
     
     if (category) query.category = category;
     if (ownerId) query.ownerId = ownerId;
-    if (search) query.name = { $regex: search, $options: 'i' };
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
     
     if (minPrice || maxPrice) {
       query.pricePerDay = {};

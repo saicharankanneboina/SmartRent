@@ -7,6 +7,7 @@ require('dotenv').config();
 const Equipment = require('./models/Equipment');
 const User = require('./models/User');
 
+// Every item has a unique, type-specific Unsplash image with consistent sizing (?w=800&q=80).
 const demoEquipment = [
   // =========================
   // EXCAVATORS
@@ -21,7 +22,8 @@ const demoEquipment = [
     longitude: 78.3489,
     rating: 4.5,
     availability: true,
-    images: []
+    // Large yellow excavator on a construction site
+    images: ['https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=800&q=80']
   },
   {
     name: 'Komatsu Excavator',
@@ -33,7 +35,8 @@ const demoEquipment = [
     longitude: 78.4138,
     rating: 4.9,
     availability: true,
-    images: []
+    // Excavator arm close-up on a job site
+    images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80']
   },
   {
     name: 'Hyundai Excavator',
@@ -45,7 +48,8 @@ const demoEquipment = [
     longitude: 78.4983,
     rating: 4.3,
     availability: false,
-    images: []
+    // Orange excavator working on earthmoving
+    images: ['https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?w=800&q=80']
   },
 
   // =========================
@@ -61,7 +65,8 @@ const demoEquipment = [
     longitude: 78.3915,
     rating: 4.6,
     availability: true,
-    images: []
+    // Concrete mixer drum on a building site
+    images: ['https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80']
   },
   {
     name: 'Schwing Stetter Concrete Mixer',
@@ -73,7 +78,8 @@ const demoEquipment = [
     longitude: 78.5522,
     rating: 4.8,
     availability: true,
-    images: []
+    // Transit / ready-mix concrete truck pouring
+    images: ['https://images.unsplash.com/photo-1561136594-7f68813de8ac?w=800&q=80']
   },
 
   // =========================
@@ -89,7 +95,8 @@ const demoEquipment = [
     longitude: 78.4370,
     rating: 4.6,
     availability: true,
-    images: []
+    // Blue tractor ploughing a field
+    images: ['https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&q=80']
   },
   {
     name: 'John Deere 5310 Tractor',
@@ -101,7 +108,8 @@ const demoEquipment = [
     longitude: 78.4908,
     rating: 4.9,
     availability: true,
-    images: []
+    // Classic green John Deere tractor in a field
+    images: ['https://images.unsplash.com/photo-1619467573809-e70b46ba8af5?w=800&q=80']
   },
 
   // =========================
@@ -117,7 +125,8 @@ const demoEquipment = [
     longitude: 78.4814,
     rating: 4.4,
     availability: true,
-    images: []
+    // Rotavator blades close-up on field soil
+    images: ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80']
   },
   {
     name: 'Fieldking Rotavator',
@@ -129,7 +138,8 @@ const demoEquipment = [
     longitude: 78.5591,
     rating: 4.7,
     availability: false,
-    images: []
+    // Tractor with rotary tiller attachment working a field
+    images: ['https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80']
   },
 
   // =========================
@@ -145,7 +155,8 @@ const demoEquipment = [
     longitude: 78.4660,
     rating: 4.5,
     availability: true,
-    images: []
+    // Industrial diesel generator unit outdoors
+    images: ['https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&q=80']
   },
   {
     name: 'Cummins Diesel Generator',
@@ -157,7 +168,8 @@ const demoEquipment = [
     longitude: 78.4347,
     rating: 4.9,
     availability: true,
-    images: []
+    // Large generator set with exhaust stack
+    images: ['https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80']
   },
 
   // =========================
@@ -173,7 +185,8 @@ const demoEquipment = [
     longitude: 78.4071,
     rating: 4.8,
     availability: true,
-    images: []
+    // Professional speaker towers set up for a live event
+    images: ['https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80']
   },
   {
     name: 'Professional DJ Sound System',
@@ -185,7 +198,8 @@ const demoEquipment = [
     longitude: 78.3908,
     rating: 4.6,
     availability: true,
-    images: []
+    // DJ booth with full sound rig and stage lights
+    images: ['https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80']
   }
 ];
 
@@ -254,4 +268,3 @@ async function seedDemoEquipment() {
 }
 
 seedDemoEquipment();
-

@@ -9,6 +9,7 @@ const Equipment = require('./models/Equipment');
 
 dotenv.config();
 
+// Each image URL uses a unique, equipment-specific Unsplash photo with consistent sizing.
 const equipmentData = [
   {
     name: 'Mahindra 575 DI Tractor',
@@ -18,7 +19,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1592982537447-7440770cbfc9'],
+    images: ['https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=800&q=80'],
     rating: 4.5,
     availability: true
   },
@@ -30,7 +31,7 @@ const equipmentData = [
     location: 'Warangal',
     latitude: 17.9689,
     longitude: 79.5941,
-    images: ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449'],
+    images: ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80'],
     rating: 4.3,
     availability: true
   },
@@ -42,7 +43,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.4065,
     longitude: 78.4772,
-    images: ['https://images.unsplash.com/photo-1580901369227-308f6f40ddeb'],
+    images: ['https://images.unsplash.com/photo-1580901369227-308f6f40ddeb?w=800&q=80'],
     rating: 4.7,
     availability: true
   },
@@ -54,7 +55,7 @@ const equipmentData = [
     location: 'Secunderabad',
     latitude: 17.4399,
     longitude: 78.4983,
-    images: ['https://images.unsplash.com/photo-1504307651254-35680f356dfd'],
+    images: ['https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80'],
     rating: 4.2,
     availability: true
   },
@@ -66,7 +67,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1473341304170-971dccb5ac1e'],
+    images: ['https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80'],
     rating: 4.4,
     availability: true
   },
@@ -78,7 +79,7 @@ const equipmentData = [
     location: 'Vijayawada',
     latitude: 16.5062,
     longitude: 80.648,
-    images: ['https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122'],
+    images: ['https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80'],
     rating: 4.1,
     availability: true
   },
@@ -90,7 +91,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1492684223066-81342ee5ff30'],
+    images: ['https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80'],
     rating: 4.6,
     availability: true
   },
@@ -102,7 +103,7 @@ const equipmentData = [
     location: 'Secunderabad',
     latitude: 17.4399,
     longitude: 78.4983,
-    images: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3'],
+    images: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=80'],
     rating: 4.4,
     availability: true
   },
@@ -114,7 +115,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3'],
+    images: ['https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80'],
     rating: 4.2,
     availability: true
   },
@@ -126,7 +127,7 @@ const equipmentData = [
     location: 'Nalgonda',
     latitude: 17.0575,
     longitude: 79.2684,
-    images: ['https://images.unsplash.com/photo-1542013936693-884638332954'],
+    images: ['https://images.unsplash.com/photo-1542013936693-884638332954?w=800&q=80'],
     rating: 4.0,
     availability: true
   }
@@ -187,4 +188,3 @@ const seedEquipment = async () => {
 };
 
 seedEquipment();
-

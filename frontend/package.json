@@ -1,0 +1,12 @@
+{
+  "name": "smartrent-frontend",
+  "version": "1.0.0",
+  "description": "SmartRent Frontend - Static Site",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve . --listen 3000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
