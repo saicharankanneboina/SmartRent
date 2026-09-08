@@ -46,6 +46,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('startDate').min = today;
     document.getElementById('endDate').min = today;
+
+    // Setup Compare Button
+    setupCompareButton(eq._id);
+  }
+
+  // Compare Support
+  const STORAGE_KEY = 'smartrent_compare_items';
+  function getCompareIds() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function setupCompareButton(id) {
+    const detailCompareBtn = document.getElementById('detailCompareBtn');
+    const viewComparisonLink = document.getElementById('viewComparisonLink');
+    if (!detailCompareBtn) return;
+
+    function updateBtnState() {
+      const ids = getCompareIds();
+      const isSelected = ids.includes(id);
+      detailCompareBtn.classList.toggle('btn-primary', isSelected);
+      detailCompareBtn.classList.toggle('btn-outline', !isSelected);
+      detailCompareBtn.textContent = isSelected ? '✓ Added to Compare' : '+ Add to Compare';
+      if (viewComparisonLink) {
+        viewComparisonLink.classList.toggle('hidden', ids.length === 0);
+      }
+    }
+
+    detailCompareBtn.addEventListener('click', () => {
+      let ids = getCompareIds();
+      if (ids.includes(id)) {
+        ids = ids.filter(item => item !== id);
+      } else {
+        if (ids.length >= 4) {
+          alert('You can compare a maximum of 4 equipment items at a time.');
+          return;
+        }
+        ids.push(id);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+      window.dispatchEvent(new Event('compareUpdated'));
+      updateBtnState();
+    });
+
+    updateBtnState();
   }
 
   // Cost calculation

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Equipment | SmartRent</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">SmartRent</a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <section class="container mt-4 mb-4">
+    <div class="flex justify-between items-center mb-3" style="flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h2 style="margin-bottom: 0.25rem;">Equipment Comparison</h2>
+        <p style="margin-bottom: 0;" id="compareSubtitle">Side-by-side comparison of specifications, pricing, and ratings.</p>
+      </div>
+      <div class="flex items-center" style="gap: 0.75rem;">
+        <button id="clearCompareBtn" class="btn btn-outline" style="font-size: 0.875rem; padding: 0.5rem 1rem;">Clear All</button>
+        <a href="equipment.html" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.5rem 1rem;">+ Add More Equipment</a>
+      </div>
+    </div>
+
+    <!-- Summary Metrics Card -->
+    <div id="metricsBar" class="card mb-4 hidden" style="background: linear-gradient(135deg, rgba(11, 31, 64, 0.03), rgba(59, 130, 246, 0.08)); border: 1px solid var(--border-color);">
+      <div class="card-body" style="padding: 1.25rem 1.75rem;">
+        <div class="grid grid-cols-4" style="text-align: center; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Comparing</span>
+            <h4 id="metricCount" style="margin: 0; color: var(--primary-color);">0 items</h4>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Lowest Daily Rate</span>
+            <h4 id="metricLowest" style="margin: 0; color: #10b981;">₹0</h4>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Rate Spread</span>
+            <h4 id="metricSpread" style="margin: 0; color: var(--text-primary);">₹0</h4>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Top Rating</span>
+            <h4 id="metricRating" style="margin: 0; color: #f59e0b;">⭐ 0.0</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadingIndicator" class="text-center my-4">
+      <div class="spinner"></div>
+      <p class="mt-2 text-secondary">Loading comparison data...</p>
+    </div>
+
+    <div id="errorMsg" class="mb-3 text-center" style="color: #ef4444;"></div>
+
+    <!-- Empty state when fewer than 2 items -->
+    <div id="emptyState" class="card text-center hidden" style="padding: 3.5rem 2rem;">
+      <svg style="width: 56px; height: 56px; color: var(--text-secondary); margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h3 style="margin-bottom: 0.5rem;">Select at least 2 equipment items to compare</h3>
+      <p style="max-width: 450px; margin: 0 auto 1.5rem;">Choose 2 to 4 equipment listings from our catalog to compare daily rental rates, deposits, user ratings, and specifications.</p>
+      <a href="equipment.html" class="btn btn-primary" style="padding: 0.75rem 2rem;">Browse Equipment Catalog</a>
+    </div>
+
+    <!-- Comparison Table / Grid Container -->
+    <div id="comparisonContainer" class="compare-container hidden">
+      <div class="compare-grid" id="compareGrid">
+        <!-- Injected dynamically by comparison.js -->
+      </div>
+    </div>
+  </section>
+
+  <script src="js/api.js"></script>
+  <script src="js/comparison.js"></script>
+</body>
+</html>

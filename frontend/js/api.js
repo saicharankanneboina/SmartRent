@@ -51,10 +51,23 @@ function logout() {
   window.location.href = 'index.html';
 }
 
+function getCompareCount() {
+  try {
+    const items = JSON.parse(localStorage.getItem('smartrent_compare_items') || '[]');
+    return items.length;
+  } catch {
+    return 0;
+  }
+}
+
 function updateNavbar() {
   const navLinks = document.getElementById('navLinks');
   if (!navLinks) return;
   
+  const compareCount = getCompareCount();
+  const compareBadge = compareCount > 0 ? ` <span style="background: var(--accent-color); color: white; border-radius: 9999px; padding: 0.1rem 0.45rem; font-size: 0.7rem; font-weight: 700;">${compareCount}</span>` : '';
+  const compareLink = `<a href="comparison.html">Compare${compareBadge}</a>`;
+
   if (isLoggedIn()) {
     const user = getUser();
     const dashboardLink = user.role === 'Admin' ? 'admin-dashboard.html' : 
@@ -63,12 +76,14 @@ function updateNavbar() {
                           
     navLinks.innerHTML = `
       <a href="equipment.html">Browse Equipment</a>
+      ${compareLink}
       <a href="${dashboardLink}">Dashboard</a>
       <a href="#" onclick="logout()" class="btn btn-outline" style="padding: 0.4rem 1rem;">Logout</a>
     `;
   } else {
     navLinks.innerHTML = `
       <a href="equipment.html">Browse Equipment</a>
+      ${compareLink}
       <a href="login.html">Login</a>
       <a href="register.html" class="btn btn-primary" style="padding: 0.4rem 1rem;">Sign Up</a>
     `;
@@ -77,6 +92,7 @@ function updateNavbar() {
 
 // Call on load if nav exists
 document.addEventListener('DOMContentLoaded', updateNavbar);
+window.addEventListener('compareUpdated', updateNavbar);
 
 // Route Guard
 (function() {

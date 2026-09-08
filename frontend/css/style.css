@@ -588,3 +588,216 @@ p {
   }
 }
 
+/* ==========================================================================
+   Equipment Comparison Styles
+   ========================================================================== */
+
+/* Floating Comparison Dock (fixed bottom) */
+.compare-dock {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(150%);
+  z-index: 1000;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 15px 35px -5px rgba(11, 31, 64, 0.25), 0 5px 15px rgba(0, 0, 0, 0.08);
+  padding: 0.85rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  max-width: 90vw;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.compare-dock.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.compare-dock-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.compare-dock-badge {
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.55rem;
+  font-weight: 700;
+}
+
+.compare-dock-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.compare-dock-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 2px solid var(--secondary-color);
+  background: #f1f5f9;
+}
+
+.compare-dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Compare Toggle Button on Equipment Card */
+.btn-compare-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color);
+  background: #fff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-compare-toggle:hover {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.btn-compare-toggle.selected {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+/* Comparison Matrix Page */
+.compare-container {
+  overflow-x: auto;
+  padding-bottom: 2rem;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 220px repeat(auto-fit, minmax(260px, 1fr));
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.compare-col {
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.compare-col:last-child {
+  border-right: none;
+}
+
+.compare-header-cell {
+  padding: 1.5rem 1.25rem;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.compare-header-cell.spec-labels {
+  align-items: flex-start;
+  text-align: left;
+  justify-content: flex-end;
+}
+
+.compare-row-cell {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.925rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60px;
+}
+
+.compare-row-cell.label-cell {
+  background: #f8fafc;
+  font-weight: 600;
+  color: var(--text-primary);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.compare-row-cell:last-child {
+  border-bottom: none;
+}
+
+.badge-best-value {
+  background: #10b981;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.badge-top-rated {
+  background: #f59e0b;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.compare-remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.compare-remove-btn:hover {
+  background: #ef4444;
+  color: #fff;
+}
+

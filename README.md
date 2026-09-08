@@ -10,6 +10,7 @@ SmartRent is a modern, responsive, full-stack web application designed for renti
 - **Explainable AI:** Highlights exactly *why* a piece of equipment was recommended
 - **Simulated Payment & Security Deposit:** Seamless checkout flow visualization
 - **Dashboards:** Unique views for Renters, Owners, and Admins
+- **Equipment Comparison Tool:** Side-by-side comparison of 2 to 4 equipment listings (daily rate, security deposit, projected 3/7-day total cost, ratings, availability, specs) with a floating comparison dock and dedicated comparison view
 
 ## Tech Stack
 - **Frontend:** Vanilla JS, HTML5, CSS3
