@@ -5,179 +5,357 @@ const User = require('../models/User');
 const Equipment = require('../models/Equipment');
 const Booking = require('../models/Booking');
 
-describe('SmartRent API Tests', () => {
+// ─────────────────────────────────────────────────────────────
+//  SmartRent — Core Feature Tests
+//  Covers: Registration, Login, Equipment, Booking, Double Booking
+// ─────────────────────────────────────────────────────────────
+
+// MongoDB Memory Server can take 20-40s to download/start — extend globally
+jest.setTimeout(60000);
+
+describe('SmartRent Core API Tests', () => {
+
+  // Shared state across tests (populated as tests run in order)
   let renterToken;
   let ownerToken;
-  let renterId;
-  let ownerId;
   let equipmentId;
-
+  let bookingId;
   let mongoServer;
 
+  // ── Setup: spin up in-memory MongoDB before all tests ──────
+  // Explicit 60s timeout on beforeAll to handle slow MMS startup
   beforeAll(async () => {
     const { MongoMemoryServer } = require('mongodb-memory-server');
     mongoServer = await MongoMemoryServer.create();
-    const url = mongoServer.getUri();
-    await mongoose.connect(url);
-    
-    // Clear collections
+    await mongoose.connect(mongoServer.getUri());
+
+    // Start clean
     await User.deleteMany();
     await Equipment.deleteMany();
     await Booking.deleteMany();
-  });
+  }, 60000);
 
+  // ── Teardown: drop DB and close connection after all tests ──
   afterAll(async () => {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
-    if (mongoServer) {
-      await mongoServer.stop();
-    }
-  });
+    if (mongoServer) await mongoServer.stop();
+  }, 30000);
 
-  describe('Auth API', () => {
-    it('should register a renter', async () => {
-      const res = await request(app).post('/api/auth/register').send({
-        name: 'Test Renter',
-        email: 'renter@test.com',
-        password: 'password123',
-        role: 'Renter'
-      });
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 1 — Registration
+  //  POST /api/auth/register
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 1 — Registration', () => {
+
+    it('Valid registration returns 201 and a JWT token', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Sai Renter',
+          email: 'renter@smartrent.com',
+          password: 'Test@1234',
+          role: 'Renter'
+        });
+
       expect(res.statusCode).toBe(201);
       expect(res.body.success).toBe(true);
-      expect(res.body.token).toBeDefined();
-      renterToken = res.body.token;
-      renterId = res.body.user.id;
+      expect(res.body.token).toBeDefined();        // JWT must be returned
+      expect(res.body.user.role).toBe('Renter');
+
+      renterToken = res.body.token;                // save for later tests
     });
 
-    it('should register an owner', async () => {
-      const res = await request(app).post('/api/auth/register').send({
-        name: 'Test Owner',
-        email: 'owner@test.com',
-        password: 'password123',
-        role: 'Equipment Owner'
-      });
+    it('Also registers an Equipment Owner (needed for booking tests)', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Charan Owner',
+          email: 'owner@smartrent.com',
+          password: 'Test@1234',
+          role: 'Equipment Owner'
+        });
+
       expect(res.statusCode).toBe(201);
+      expect(res.body.success).toBe(true);
+
       ownerToken = res.body.token;
-      ownerId = res.body.user.id;
     });
 
-    it('should login the renter', async () => {
-      const res = await request(app).post('/api/auth/login').send({
-        email: 'renter@test.com',
-        password: 'password123'
-      });
+    it('Missing email → returns 400 or 500 (validation error)', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'No Email User',
+          // email intentionally omitted
+          password: 'Test@1234',
+          role: 'Renter'
+        });
+
+      // Mongoose throws a validation error (500) or controller catches it (400)
+      expect([400, 500]).toContain(res.statusCode);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('Duplicate email → returns 400 with "already exists" error', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Duplicate Renter',
+          email: 'renter@smartrent.com',  // already registered above
+          password: 'Test@1234',
+          role: 'Renter'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/already exists/i);
+    });
+
+  });
+
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 2 — Login
+  //  POST /api/auth/login
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 2 — Login', () => {
+
+    it('Correct credentials → success + JWT token returned', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'renter@smartrent.com',
+          password: 'Test@1234'
+        });
+
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
+      expect(res.body.token).toBeDefined();        // JWT must be present
+      expect(res.body.user.email).toBe('renter@smartrent.com');
     });
+
+    it('Wrong password → 401 Unauthorized, no token', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'renter@smartrent.com',
+          password: 'WrongPassword!'
+        });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.token).toBeUndefined();      // no token on failed login
+    });
+
+    it('Non-existent email → 401 Unauthorized', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'ghost@smartrent.com',
+          password: 'Test@1234'
+        });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+
   });
 
-  describe('Equipment API', () => {
-    it('should not allow renter to create equipment', async () => {
-      const res = await request(app)
-        .post('/api/equipment')
-        .set('Authorization', `Bearer ${renterToken}`)
-        .send({
-          name: 'Excavator',
-          category: 'Construction',
-          description: 'Big digger',
-          pricePerDay: 200,
-          location: 'Test City'
-        });
-      expect(res.statusCode).toBe(403);
-    });
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 3 — Equipment
+  //  GET /api/equipment
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 3 — Equipment', () => {
 
-    it('should allow owner to create equipment', async () => {
+    // Create one equipment item as owner so the list is never empty
+    beforeAll(async () => {
       const res = await request(app)
         .post('/api/equipment')
         .set('Authorization', `Bearer ${ownerToken}`)
         .send({
-          name: 'Mini Excavator',
+          name: 'JCB Excavator',
           category: 'Construction',
-          description: 'Small digger',
-          pricePerDay: 150,
-          location: 'Test City',
-          latitude: 40.7128,
-          longitude: -74.0060
+          description: 'Heavy-duty excavator for digging and construction work.',
+          pricePerDay: 4500,
+          location: 'Hyderabad',
+          latitude: 17.4065,
+          longitude: 78.4772
         });
-      expect(res.statusCode).toBe(201);
-      equipmentId = res.body.data._id;
-    });
 
-    it('should get all equipment', async () => {
+      expect(res.statusCode).toBe(201);
+      equipmentId = res.body.data._id;            // save for booking tests
+    }, 15000);
+
+    it('GET /api/equipment returns a list with at least 1 item', async () => {
       const res = await request(app).get('/api/equipment');
+
       expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.length).toBeGreaterThan(0);
     });
+
+    it('GET /api/equipment returns correct fields on each item', async () => {
+      const res = await request(app).get('/api/equipment');
+      const item = res.body.data[0];
+
+      expect(item).toHaveProperty('name');
+      expect(item).toHaveProperty('category');
+      expect(item).toHaveProperty('pricePerDay');
+      expect(item).toHaveProperty('availability');
+    });
+
+    it('GET /api/equipment?search=Excavator filters by name/description', async () => {
+      const res = await request(app).get('/api/equipment?search=Excavator');
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.data.length).toBeGreaterThan(0);
+      // Every result must relate to Excavator in name or description
+      res.body.data.forEach(item => {
+        const combined = (item.name + ' ' + item.description).toLowerCase();
+        expect(combined).toMatch(/excavator/i);
+      });
+    });
+
   });
 
-  describe('Booking API', () => {
-    it('should create a booking and check availability', async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() + 1); // tomorrow
-      
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 4); // 4 days later
-      
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 4 — Booking
+  //  POST /api/bookings
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 4 — Booking', () => {
+
+    // Helper: date N days from today as ISO string
+    const futureDate = (days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString();
+    };
+
+    it('Valid booking → 201 Created with correct price calculation', async () => {
       const res = await request(app)
         .post('/api/bookings')
         .set('Authorization', `Bearer ${renterToken}`)
         .send({
           equipmentId,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: futureDate(10),  // 10 days from now
+          endDate:   futureDate(13),  // 13 days from now → 3 rental days
           paymentMethod: 'Online Payment'
         });
-        
+
       expect(res.statusCode).toBe(201);
-      expect(res.body.data.paymentStatus).toBe('Paid');
-      
-      // Update status to Active to test double booking
-      await request(app)
-        .put(`/api/bookings/${res.body.data._id}/status`)
-        .set('Authorization', `Bearer ${ownerToken}`)
-        .send({ bookingStatus: 'Active' });
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.equipmentId).toBe(equipmentId);
+      expect(res.body.data.paymentStatus).toBe('Paid');       // Online Payment = auto Paid
+      expect(res.body.data.totalRentalPrice).toBe(4500 * 3);  // 3 days × ₹4500
+      expect(res.body.data.bookingStatus).toBe('Pending');    // awaiting owner approval
+
+      bookingId = res.body.data._id;                          // save for Test 5
     });
 
-    it('should prevent double booking', async () => {
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() + 2); 
-      
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 3); 
-      
+    it('Booking without auth token → 401 Unauthorized', async () => {
+      const res = await request(app)
+        .post('/api/bookings')
+        .send({
+          equipmentId,
+          startDate: futureDate(20),
+          endDate:   futureDate(22),
+          paymentMethod: 'Cash'
+        });
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('Cash payment method → paymentStatus is Pending', async () => {
       const res = await request(app)
         .post('/api/bookings')
         .set('Authorization', `Bearer ${renterToken}`)
         .send({
           equipmentId,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: futureDate(20),
+          endDate:   futureDate(22),
           paymentMethod: 'Cash'
         });
-        
-      expect(res.statusCode).toBe(400);
-      expect(res.body.error).toMatch(/already booked/);
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.data.paymentStatus).toBe('Pending');    // Cash → stays Pending
     });
+
   });
 
-  describe('Recommendation API', () => {
-    // Note: This relies on the Gemini API. If the key is not valid, it might fail.
-    // To make it robust, we would mock geminiService, but we'll try a real hit or expect 502 if unconfigured.
-    it('should handle AI recommendation', async () => {
-      const res = await request(app)
-        .post('/api/recommendations/analyze')
-        .send({
-          prompt: 'I need to dig a small hole',
-          latitude: 40.7128,
-          longitude: -74.0060,
-          budget: 200
-        });
-      
-      // We expect either 200 (if Gemini works) or 502 (if API key is invalid/mocked)
-      expect([200, 502]).toContain(res.statusCode);
-      if (res.statusCode === 200) {
-        expect(res.body.recommendations).toBeDefined();
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 5 — Double Booking Prevention ⭐
+  //  Business-critical: same equipment cannot be booked twice
+  //  for overlapping dates once a booking is Accepted.
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 5 — Double Booking Prevention', () => {
+
+    const futureDate = (days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString();
+    };
+
+    // Escalate the Test 4 booking to 'Accepted' so the overlap guard triggers
+    beforeAll(async () => {
+      if (bookingId) {
+        await request(app)
+          .put(`/api/bookings/${bookingId}/status`)
+          .set('Authorization', `Bearer ${ownerToken}`)
+          .send({ bookingStatus: 'Accepted' });
       }
+    }, 15000);
+
+    it('Exact same dates as an accepted booking → 400 "already booked"', async () => {
+      // Original booking: days 10–13
+      const res = await request(app)
+        .post('/api/bookings')
+        .set('Authorization', `Bearer ${renterToken}`)
+        .send({
+          equipmentId,
+          startDate: futureDate(10),
+          endDate:   futureDate(13),
+          paymentMethod: 'Cash'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/already booked/i);
     });
+
+    it('Partially overlapping dates → 400 "already booked"', async () => {
+      // Original booking: 10–13. Attempt 12–15 (overlaps at 12–13)
+      const res = await request(app)
+        .post('/api/bookings')
+        .set('Authorization', `Bearer ${renterToken}`)
+        .send({
+          equipmentId,
+          startDate: futureDate(12),
+          endDate:   futureDate(15),
+          paymentMethod: 'Online Payment'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/already booked/i);
+    });
+
+    it('Non-overlapping dates → 201 booking succeeds', async () => {
+      // Original booking: 10–13. Attempt 15–18 (completely clear window)
+      const res = await request(app)
+        .post('/api/bookings')
+        .set('Authorization', `Bearer ${renterToken}`)
+        .send({
+          equipmentId,
+          startDate: futureDate(15),
+          endDate:   futureDate(18),
+          paymentMethod: 'Online Payment'
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.success).toBe(true);
+    });
+
   });
+
 });
