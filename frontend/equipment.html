@@ -44,6 +44,24 @@
     </div>
   </section>
 
+  <!-- Floating Comparison Dock -->
+  <div id="compareDock" class="compare-dock">
+    <div class="compare-dock-info">
+      <svg style="width: 20px; height: 20px; color: var(--secondary-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <span>Comparing</span>
+      <span id="dockCompareCount" class="compare-dock-badge">0/4</span>
+    </div>
+    <div id="dockThumbs" class="compare-dock-thumbs">
+      <!-- Miniature thumbnails injected here -->
+    </div>
+    <div class="compare-dock-actions">
+      <button id="dockClearBtn" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Clear</button>
+      <a href="comparison.html" id="dockCompareBtn" class="btn btn-primary" style="padding: 0.4rem 1.1rem; font-size: 0.85rem; white-space: nowrap;">Compare Now →</a>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script src="js/equipment.js"></script>
 </body>

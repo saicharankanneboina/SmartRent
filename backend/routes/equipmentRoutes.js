@@ -4,7 +4,8 @@ const {
   getEquipment,
   createEquipment,
   updateEquipment,
-  deleteEquipment
+  deleteEquipment,
+  compareEquipments
 } = require('../controllers/equipmentController');
 const { protect } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
@@ -14,6 +15,8 @@ const router = express.Router();
 router.route('/')
   .get(getEquipments)
   .post(protect, authorize('Equipment Owner', 'Admin'), createEquipment);
+
+router.post('/compare', compareEquipments);
 
 router.route('/:id')
   .get(getEquipment)

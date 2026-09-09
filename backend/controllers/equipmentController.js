@@ -104,9 +104,102 @@ exports.deleteEquipment = async (req, res) => {
       return res.status(401).json({ success: false, error: 'Not authorized to delete this equipment' });
     }
 
+
     await equipment.deleteOne();
     res.status(200).json({ success: true, data: {} });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// @desc    Compare multiple equipment items (2 to 4 items)
+// @route   POST /api/equipment/compare
+// @access  Public
+exports.compareEquipments = async (req, res) => {
+  try {
+    const { equipmentIds } = req.body;
+
+    if (!equipmentIds || !Array.isArray(equipmentIds)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide an array of equipmentIds to compare.'
+      });
+    }
+
+    if (equipmentIds.length < 2) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please select at least 2 equipment items to compare.'
+      });
+    }
+
+    if (equipmentIds.length > 4) {
+      return res.status(400).json({
+        success: false,
+        error: 'You can compare a maximum of 4 equipment items at a time.'
+      });
+    }
+
+    const mongoose = require('mongoose');
+    const areValidIds = equipmentIds.every(id => mongoose.Types.ObjectId.isValid(id));
+    if (!areValidIds) {
+      return res.status(400).json({
+        success: false,
+        error: 'One or more provided equipment IDs are invalid.'
+      });
+    }
+
+    const items = await Equipment.find({ _id: { $in: equipmentIds } }).populate('ownerId', 'name email phone');
+
+    if (items.length !== equipmentIds.length) {
+      return res.status(404).json({
+        success: false,
+        error: 'One or more selected equipment items could not be found.'
+      });
+    }
+
+    // Keep items in the order requested by equipmentIds
+    const orderedItems = equipmentIds.map(id => items.find(item => item._id.toString() === id.toString()));
+
+    const prices = orderedItems.map(item => item.pricePerDay);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    const ratings = orderedItems.map(item => item.rating || 0);
+    const maxRating = Math.max(...ratings);
+
+    const enrichedItems = orderedItems.map(item => {
+      const dailyPrice = item.pricePerDay;
+      const securityDeposit = dailyPrice * 0.2; // 20% security deposit
+      const est3DayTotal = (dailyPrice * 3) + (dailyPrice * 3 * 0.2);
+      const est7DayTotal = (dailyPrice * 7) + (dailyPrice * 7 * 0.2);
+
+      const baseItem = typeof item.toObject === 'function' ? item.toObject() : { ...item };
+
+      return {
+        ...baseItem,
+        securityDeposit,
+        est3DayTotal,
+        est7DayTotal,
+        isLowestPrice: dailyPrice === minPrice,
+        isHighestRated: item.rating > 0 && item.rating === maxRating,
+        priceDiffFromLowest: dailyPrice - minPrice
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      count: enrichedItems.length,
+      metrics: {
+        lowestPrice: minPrice,
+        highestPrice: maxPrice,
+        priceDifference: maxPrice - minPrice,
+        highestRating: maxRating
+      },
+      data: enrichedItems
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
