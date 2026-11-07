@@ -194,5 +194,66 @@ class SmartRentSeleniumTests(unittest.TestCase):
         print("✓ Test Case 3 Passed: Login validation triggered feedback correctly.")
 
 
+    
+    def test_case_4_admin_dashboard_statistics(self):
+        admin_token = os.environ.get("SMARTRENT_ADMIN_TOKEN")
+        self.assertTrue(admin_token, "Admin token is required")
+
+        self.driver.get(self.get_page_url("index.html"))
+
+        self.driver.execute_script("""
+            localStorage.setItem('token', arguments[0]);
+            localStorage.setItem('user', JSON.stringify({
+                id: 'admin-test',
+                name: 'Test Admin',
+                role: 'Admin'
+            }));
+        """, admin_token)
+
+        self.driver.get(self.get_page_url("admin-dashboard.html"))
+
+        self.wait.until(
+            EC.visibility_of_element_located((By.ID, "adminContent"))
+        )
+
+        for element_id in [
+            "statUsers",
+            "statEquipment",
+            "statActiveBookings",
+            "statRenters",
+            "statOwners"
+        ]:
+            value = self.driver.find_element(By.ID, element_id).text
+            self.assertTrue(value.isdigit())
+
+        revenue = self.driver.find_element(By.ID, "statRevenue").text
+        self.assertIn("₹", revenue)
+
+        print("Test Case 4 Passed: Admin statistics verified.")
+
+    def test_case_5_admin_api_access_restriction(self):
+        renter_token = os.environ.get("SMARTRENT_RENTER_TOKEN")
+        self.assertTrue(renter_token, "Renter token is required")
+
+        self.driver.get(self.get_page_url("index.html"))
+
+        status_code = self.driver.execute_async_script("""
+            const token = arguments[0];
+            const callback = arguments[1];
+
+            fetch('http://localhost:5000/api/admin/dashboard', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => callback(response.status))
+            .catch(() => callback(0));
+        """, renter_token)
+
+        self.assertEqual(status_code, 403)
+
+        print("Test Case 5 Passed: Admin access restriction verified.")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
