@@ -7,7 +7,7 @@ const Booking = require('../models/Booking');
 
 // ─────────────────────────────────────────────────────────────
 //  SmartRent — Core Feature Tests
-//  Covers: Registration, Login, Equipment, Booking, Double Booking
+//  Covers: Registration, Login, Equipment, Booking, Double Booking, Date Range Validation
 // ─────────────────────────────────────────────────────────────
 
 // MongoDB Memory Server can take 20-40s to download/start — extend globally
@@ -354,6 +354,55 @@ describe('SmartRent Core API Tests', () => {
 
       expect(res.statusCode).toBe(201);
       expect(res.body.success).toBe(true);
+    });
+
+  });
+
+
+  // ═══════════════════════════════════════════════════════════
+  //  TEST 6 — Booking Date Range Validation
+  //  Business Rule: End date must be strictly after start date.
+  //  Backwards dates or 0-day rentals are rejected.
+  // ═══════════════════════════════════════════════════════════
+  describe('Test 6 — Booking Date Range Validation', () => {
+
+    const futureDate = (days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString();
+    };
+
+    it('End date before start date → 400 "Invalid dates"', async () => {
+      const res = await request(app)
+        .post('/api/bookings')
+        .set('Authorization', `Bearer ${renterToken}`)
+        .send({
+          equipmentId,
+          startDate: futureDate(10),
+          endDate:   futureDate(5),
+          paymentMethod: 'Cash'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/invalid dates/i);
+    });
+
+    it('Same start and end date (0 days) → 400 "Invalid dates"', async () => {
+      const sameDay = futureDate(10);
+      const res = await request(app)
+        .post('/api/bookings')
+        .set('Authorization', `Bearer ${renterToken}`)
+        .send({
+          equipmentId,
+          startDate: sameDay,
+          endDate:   sameDay,
+          paymentMethod: 'Online Payment'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/invalid dates/i);
     });
 
   });

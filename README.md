@@ -60,9 +60,15 @@ Automated backend API tests use an in-memory MongoDB database so no local MongoD
 cd backend
 npm run test
 ```
+- **Test 1 — Registration**: Valid user registration, owner registration, duplicate and missing field handling.
+- **Test 2 — Login**: Authentication with valid credentials, password mismatch (401), and non-existent users.
+- **Test 3 — Equipment**: Catalog retrieval, item schema validation, and search filtering.
+- **Test 4 — Booking**: Booking creation, automatic rental price calculation, and payment method handling.
+- **Test 5 — Double Booking Prevention**: Overlapping date collision prevention guard.
+- **Test 6 — Booking Date Range Validation (Logical Test)**: Enforces business logic that rental end dates must be strictly after start dates (rejects backwards or 0-day bookings with 400).
 
 ### 2. End-to-End UI Automation Tests (Selenium WebDriver)
-SmartRent includes 3 automated browser tests built with **Python** and **Selenium WebDriver**:
+SmartRent includes 5 automated browser tests built with **Python** and **Selenium WebDriver**:
 
 - **Test Case 1: Homepage Title & Navigation Verification**
   - Confirms homepage branding, loads the page title, and tests navigation across the navigation bar to the `About` page.
@@ -70,6 +76,10 @@ SmartRent includes 3 automated browser tests built with **Python** and **Seleniu
   - Verifies form controls (`name`, `email`, `password`, `role` dropdown), simulates real user input, and validates field values.
 - **Test Case 3: Login Authentication Validation & Feedback**
   - Tests invalid credential submission and asserts error message display and UI state handling.
+- **Test Case 4: Route Guard Protection & Unauthorized Access Redirect (Logical Test)**
+  - Verifies that attempting to navigate directly to the protected dashboard (`dashboard.html`) without logging in automatically redirects visitors to `login.html`.
+- **Test Case 5: Authenticated Session UI State & Logout Flow (Logical Test)**
+  - Verifies that an active user session updates the navbar to display 'Dashboard' and 'Logout', and clicking 'Logout' clears session storage and restores guest navigation.
 
 #### Prerequisites
 - **Python 3.10+**

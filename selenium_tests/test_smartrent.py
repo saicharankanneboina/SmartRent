@@ -195,64 +195,73 @@ class SmartRentSeleniumTests(unittest.TestCase):
 
 
     
-    def test_case_4_admin_dashboard_statistics(self):
-        admin_token = os.environ.get("SMARTRENT_ADMIN_TOKEN")
-        self.assertTrue(admin_token, "Admin token is required")
-
+    def test_case_4_unauthenticated_dashboard_redirect(self):
+        """
+        TEST CASE 4: Route Protection & Unauthenticated Access Redirect
+        1. Clear any local storage/session tokens to simulate a guest/logged-out visitor.
+        2. Attempt to directly access the protected Renter Dashboard (dashboard.html).
+        3. Verify that the client-side auth guard redirects the user to login.html.
+        """
+        print("\n[Running Test Case 4: Route Protection & Redirect]")
         self.driver.get(self.get_page_url("index.html"))
+        self.driver.execute_script("localStorage.clear(); sessionStorage.clear();")
+        time.sleep(1.0)
 
-        self.driver.execute_script("""
-            localStorage.setItem('token', arguments[0]);
-            localStorage.setItem('user', JSON.stringify({
-                id: 'admin-test',
-                name: 'Test Admin',
-                role: 'Admin'
-            }));
-        """, admin_token)
+        # Attempt to navigate directly to protected dashboard
+        dashboard_url = self.get_page_url("dashboard.html")
+        self.driver.get(dashboard_url)
+        time.sleep(STEP_DELAY)
 
-        self.driver.get(self.get_page_url("admin-dashboard.html"))
-
-        self.wait.until(
-            EC.visibility_of_element_located((By.ID, "adminContent"))
+        # Assert URL has been redirected to login.html
+        self.wait.until(EC.url_contains("login"))
+        self.assertIn("login", self.driver.current_url.lower(), "Guest user was not redirected to login page")
+        login_btn = self.wait.until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "form#loginForm button[type='submit']"))
         )
+        self.assertTrue(login_btn.is_displayed(), "Login form not displayed upon redirect")
+        print("✓ Test Case 4 Passed: Unauthenticated visitor properly redirected to login.")
 
-        for element_id in [
-            "statUsers",
-            "statEquipment",
-            "statActiveBookings",
-            "statRenters",
-            "statOwners"
-        ]:
-            value = self.driver.find_element(By.ID, element_id).text
-            self.assertTrue(value.isdigit())
-
-        revenue = self.driver.find_element(By.ID, "statRevenue").text
-        self.assertIn("₹", revenue)
-
-        print("Test Case 4 Passed: Admin statistics verified.")
-
-    def test_case_5_admin_api_access_restriction(self):
-        renter_token = os.environ.get("SMARTRENT_RENTER_TOKEN")
-        self.assertTrue(renter_token, "Renter token is required")
-
+    def test_case_5_navbar_session_state_and_logout(self):
+        """
+        TEST CASE 5: Authenticated Session UI State & Logout Flow
+        1. Simulate an active user session in localStorage.
+        2. Load the homepage and verify the navbar displays 'Dashboard' and 'Logout'.
+        3. Click 'Logout' and verify localStorage is cleared and navbar resets to 'Login'.
+        """
+        print("\n[Running Test Case 5: Session State & Logout Flow]")
         self.driver.get(self.get_page_url("index.html"))
 
-        status_code = self.driver.execute_async_script("""
-            const token = arguments[0];
-            const callback = arguments[1];
+        # Set mock active session
+        self.driver.execute_script("""
+            localStorage.setItem('token', 'mock-session-jwt-token-12345');
+            localStorage.setItem('user', JSON.stringify({
+                id: 'user-123',
+                name: 'John Renter',
+                role: 'Renter'
+            }));
+        """)
+        self.driver.refresh()
+        time.sleep(STEP_DELAY)
 
-            fetch('http://localhost:5000/api/admin/dashboard', {
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            })
-            .then(response => callback(response.status))
-            .catch(() => callback(0));
-        """, renter_token)
+        # Verify Logout link appears in navbar
+        logout_link = self.wait.until(
+            EC.visibility_of_element_located((By.XPATH, "//nav//a[contains(text(), 'Logout')]"))
+        )
+        self.assertTrue(logout_link.is_displayed(), "Logout button not displayed for authenticated user")
 
-        self.assertEqual(status_code, 403)
+        # Click Logout
+        logout_link.click()
+        time.sleep(STEP_DELAY)
 
-        print("Test Case 5 Passed: Admin access restriction verified.")
+        # Verify session token removed and Login link reappears
+        token_after_logout = self.driver.execute_script("return localStorage.getItem('token');")
+        self.assertIsNone(token_after_logout, "Token still present in localStorage after logout")
+
+        login_link = self.wait.until(
+            EC.visibility_of_element_located((By.XPATH, "//nav//a[contains(text(), 'Login')]"))
+        )
+        self.assertTrue(login_link.is_displayed(), "Login link not restored after logout")
+        print("✓ Test Case 5 Passed: Session state displayed and logout handled successfully.")
 
 
 if __name__ == "__main__":

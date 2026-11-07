@@ -52,7 +52,7 @@ function logout() {
 }
 
 function updateNavbar() {
-  const navLinks = document.getElementById('navLinks');
+  const navLinks = document.getElementById('navLinks') || document.getElementById('navLinksAuth');
   if (!navLinks) return;
   
   if (isLoggedIn()) {

@@ -18,6 +18,14 @@ exports.createBooking = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Equipment is currently unavailable' });
     }
 
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    
+    if (isNaN(days) || days <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid dates' });
+    }
+
     // Check for double booking
     const overlappingBookings = await Booking.find({
       equipmentId,
@@ -29,14 +37,6 @@ exports.createBooking = async (req, res) => {
 
     if (overlappingBookings.length > 0) {
       return res.status(400).json({ success: false, error: 'Equipment is already booked for these dates' });
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    
-    if (days <= 0) {
-      return res.status(400).json({ success: false, error: 'Invalid dates' });
     }
 
     const totalRentalPrice = days * equipment.pricePerDay;
