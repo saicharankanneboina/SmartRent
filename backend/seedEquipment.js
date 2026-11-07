@@ -1,3 +1,4 @@
+
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
@@ -9,7 +10,7 @@ const Equipment = require('./models/Equipment');
 
 dotenv.config();
 
-// Each image URL uses a unique, equipment-specific Unsplash photo with consistent sizing.
+// Each image URL uses a unique, equipment-specific photo with consistent sizing.
 const equipmentData = [
   {
     name: 'Mahindra 575 DI Tractor',
@@ -19,7 +20,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=800&q=80'],
+    images: ['https://i.ibb.co/qL6D8HWG/mahindra-575-tractor.jpg'],
     rating: 4.5,
     availability: true
   },
@@ -31,7 +32,7 @@ const equipmentData = [
     location: 'Warangal',
     latitude: 17.9689,
     longitude: 79.5941,
-    images: ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80'],
+    images: ['https://i.ibb.co/7dscv5dw/rotavator.webp'],
     rating: 4.3,
     availability: true
   },
@@ -43,7 +44,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.4065,
     longitude: 78.4772,
-    images: ['https://images.unsplash.com/photo-1580901369227-308f6f40ddeb?w=800&q=80'],
+    images: ['https://i.ibb.co/LWTw1Ry/jcb-excavator.jpg'],
     rating: 4.7,
     availability: true
   },
@@ -103,7 +104,7 @@ const equipmentData = [
     location: 'Secunderabad',
     latitude: 17.4399,
     longitude: 78.4983,
-    images: ['https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=80'],
+    images: ['https://i.ibb.co/jvkKtmrL/lighting.webp'],
     rating: 4.4,
     availability: true
   },
@@ -115,7 +116,7 @@ const equipmentData = [
     location: 'Hyderabad',
     latitude: 17.385,
     longitude: 78.4867,
-    images: ['https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80'],
+    images: ['https://i.ibb.co/gM9csnNf/waher.jpg'],
     rating: 4.2,
     availability: true
   },
@@ -127,7 +128,7 @@ const equipmentData = [
     location: 'Nalgonda',
     latitude: 17.0575,
     longitude: 79.2684,
-    images: ['https://images.unsplash.com/photo-1542013936693-884638332954?w=800&q=80'],
+    images: ['https://i.ibb.co/1Jsd9v63/Water-Pump-4-Hp-1.jpg'],
     rating: 4.0,
     availability: true
   }
@@ -158,6 +159,7 @@ const seedEquipment = async () => {
 
     let added = 0;
 
+    // Insert equipment only if it does not already exist
     for (const item of equipmentData) {
       const exists = await Equipment.findOne({
         name: item.name,
@@ -174,6 +176,29 @@ const seedEquipment = async () => {
       }
     }
 
+    // Update ONLY images of the last three existing equipment records
+    for (const item of equipmentData.slice(-3)) {
+      const result = await Equipment.updateOne(
+        {
+          name: item.name,
+          ownerId: owner._id
+        },
+        {
+          $set: {
+            images: item.images
+          }
+        }
+      );
+
+      if (result.matchedCount === 0) {
+        console.log(`${item.name}: Equipment record not found.`);
+      } else {
+        console.log(
+          `${item.name}: ${result.matchedCount} matched, ${result.modifiedCount} updated.`
+        );
+      }
+    }
+
     console.log(`${added} equipment items added.`);
     console.log('Equipment seeding completed.');
 
@@ -182,7 +207,11 @@ const seedEquipment = async () => {
 
   } catch (error) {
     console.error('Error seeding equipment:', error.message);
-    await mongoose.connection.close();
+
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+
     process.exit(1);
   }
 };
