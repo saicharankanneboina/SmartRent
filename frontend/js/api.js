@@ -80,10 +80,18 @@ document.addEventListener('DOMContentLoaded', updateNavbar);
 
 // Route Guard
 (function() {
-  const protectedRoutes = ['dashboard.html', 'owner-dashboard.html', 'admin-dashboard.html', 'equipment.html', 'equipment-details.html', 'comparison.html', 'bookings.html'];
-  const currentPath = window.location.pathname.split('/').pop();
+  const protectedRoutes = [
+    'dashboard', 'dashboard.html',
+    'owner-dashboard', 'owner-dashboard.html',
+    'admin-dashboard', 'admin-dashboard.html',
+    'equipment', 'equipment.html',
+    'equipment-details', 'equipment-details.html',
+    'comparison', 'comparison.html',
+    'bookings', 'bookings.html'
+  ];
+  const currentPath = window.location.pathname.split('/').filter(Boolean).pop() || '';
 
-  if (protectedRoutes.includes(currentPath)) {
+  if (protectedRoutes.includes(currentPath) || protectedRoutes.includes(currentPath.replace(/\.html$/, ''))) {
     if (!isLoggedIn()) {
       window.location.replace('login.html');
     }

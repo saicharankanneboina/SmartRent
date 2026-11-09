@@ -83,7 +83,7 @@
   <script src="js/recommendation.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      if (!isLoggedIn()) return; // api.js handles redirect
+      if (!isLoggedIn()) { window.location.replace('login.html'); return; }
       
       const user = getUser();
       document.getElementById('userName').textContent = user.name;

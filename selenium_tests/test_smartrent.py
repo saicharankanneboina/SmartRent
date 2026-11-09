@@ -1,6 +1,13 @@
 import os
+import sys
 import time
 import unittest
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
